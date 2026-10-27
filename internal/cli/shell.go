@@ -1,3 +1,4 @@
+// Package cli implements the interactive GoNetSuite shell.
 package cli
 
 import (
@@ -9,6 +10,8 @@ import (
 	"context"
 )
 
+// RunShell reads commands line by line from in, runs them, and writes all
+// output and errors to out. It returns on "exit" or when in reaches EOF.
 func RunShell(in io.Reader, out io.Writer) {
 	var scanner = bufio.NewScanner(in)
 	for {

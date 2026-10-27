@@ -8,6 +8,8 @@ import (
 	"strconv"
   )
 
+// ListenCommand handles "listen <port>". It checks that the port is a number
+// from 1 to 65535, then listens on it until stopped.
 func ListenCommand(ctx context.Context, args []string, in io.Reader, out io.Writer) error {
 	if len(args) < 1 {
           return fmt.Errorf("usage: listen <port>")

@@ -1,3 +1,5 @@
+// GoNetSuite is a command-line network toolkit built with Go's standard
+// library. Running it starts an interactive shell; type "help" for commands.
 package main
 
 import (

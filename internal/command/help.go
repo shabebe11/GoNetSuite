@@ -1,3 +1,5 @@
+// Package command contains a handler for each shell command. Handlers
+// validate their arguments and hand the networking work to other packages.
 package command
 
 import (
@@ -6,6 +8,7 @@ import (
 	"io"
 )
 
+// HelpCommand prints the list of available commands.
 func HelpCommand(ctx context.Context, args []string, in io.Reader, out io.Writer) error {
 	fmt.Fprintln(out, "-------------------------------------")
 	fmt.Fprintln(out, "Available commands:")
