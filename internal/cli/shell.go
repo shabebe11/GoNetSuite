@@ -17,7 +17,7 @@ scanner := bufio.NewScanner(os.Stdin)
 			break
 		}
 
-		input:= strings.TrimSpace(scanner.Text())
+		input:= strings.TrimSpace(strings.ToLower(scanner.Text()))
 		if input == "" {
 			continue
 		}
