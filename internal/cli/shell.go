@@ -24,19 +24,23 @@ func RunShell(in io.Reader, out io.Writer) {
 		inputArgs := strings.Fields(input)
 		name, args := inputArgs[0], inputArgs[1:]
 
+		var err error
 		switch name {
 			case "scan":
-				command.ScanCommand(context.Background(), args, in, out)
+				err = command.ScanCommand(context.Background(), args, in, out)
 			case "sniff":
-				command.SniffCommand(context.Background(), args, in, out)
+				err = command.SniffCommand(context.Background(), args, in, out)
 			case "listen":
-				command.ListenCommand(context.Background(), args, in, out)
+				err = command.ListenCommand(context.Background(), args, in, out)
 			case "exit":
 				fmt.Fprintln(out, "\nExiting the program.")
 				return
 			
 			default:
 				fmt.Fprintln(out, "\nUnknown command\n")
+		}
+		if err != nil {
+			fmt.Fprintf(out, "Error executing command: %v\n", err)
 		}
     }
 }
