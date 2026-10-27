@@ -32,6 +32,8 @@ func RunShell(in io.Reader, out io.Writer) {
 				err = command.SniffCommand(context.Background(), args, in, out)
 			case "listen":
 				err = command.ListenCommand(context.Background(), args, in, out)
+			case "help":
+				err = command.HelpCommand(context.Background(), args, in, out)
 			case "exit":
 				fmt.Fprintln(out, "\nExiting the program.")
 				return
