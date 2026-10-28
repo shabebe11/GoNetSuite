@@ -3,10 +3,10 @@ package netcat
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"log"
 	"net"
-	"fmt"
 )
 
 // Listen accepts TCP connections on port, on every network interface, and
@@ -19,16 +19,16 @@ func Listen(ctx context.Context, port int, out io.Writer) error {
 	}
 	// Accept ignores ctx, so closing the listener is what unblocks it.
 	go func() {
-          <-ctx.Done()
-          l.Close()
-  }()
-	for{
+		<-ctx.Done()
+		l.Close()
+	}()
+	for {
 		conn, err := l.Accept()
 		if err != nil {
 			return err
 		}
 
-		go func (c net.Conn) {
+		go func(c net.Conn) {
 			io.Copy(out, c)
 			c.Close()
 		}(conn)

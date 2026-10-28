@@ -19,5 +19,5 @@ func HelpCommand(ctx context.Context, args []string, in io.Reader, out io.Writer
 	fmt.Fprintln(out, "  exit   - Exit the program")
 	fmt.Fprintln(out, "-------------------------------------")
 
-	return nil;
+	return nil
 }

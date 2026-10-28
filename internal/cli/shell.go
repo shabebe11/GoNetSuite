@@ -17,7 +17,7 @@ import (
 func RunShell(in io.Reader, out io.Writer) {
 	var scanner = bufio.NewScanner(in)
 	for {
-		fmt.Fprintln(out, "Enter a command or type 'exit' to quit: ")
+		fmt.Fprintln(out, "> Enter a command or type 'exit' to quit: ")
 		if !scanner.Scan() {
 			break
 		}
@@ -44,14 +44,14 @@ func RunShell(in io.Reader, out io.Writer) {
 		case "help":
 			err = command.HelpCommand(context.Background(), args, in, out)
 		case "exit":
-			fmt.Fprintln(out, "\nExiting the program.")
+			fmt.Fprintln(out, "\n> Exiting the program.")
 			return
 
 		default:
-			fmt.Fprintln(out, "\nUnknown command\n")
+			fmt.Fprintln(out, "\n> Unknown command\n")
 		}
 		if err != nil {
-			fmt.Fprintf(out, "Error executing command: %v\n", err)
+			fmt.Fprintf(out, "> Error executing command: %v\n", err)
 		}
 	}
 }
