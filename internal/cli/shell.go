@@ -3,11 +3,13 @@ package cli
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"io"
+	"log"
 	"strings"
+
 	"github.com/shabebe11/GoNetSuite/internal/command"
-	"context"
 )
 
 // RunShell reads commands line by line from in, runs them, and writes all
@@ -16,11 +18,15 @@ func RunShell(in io.Reader, out io.Writer) {
 	var scanner = bufio.NewScanner(in)
 	for {
 		fmt.Fprintln(out, "Enter a command or type 'exit' to quit: ")
-		if(!scanner.Scan()) {
+		if !scanner.Scan() {
 			break
 		}
+		if err := scanner.Err(); err != nil {
+			// Catch and handle the error here
+			log.Fatal(err)
+		}
 
-		input:= strings.TrimSpace(scanner.Text())
+		input := strings.TrimSpace(scanner.Text())
 		if input == "" {
 			continue
 		}
@@ -29,23 +35,23 @@ func RunShell(in io.Reader, out io.Writer) {
 
 		var err error
 		switch name {
-			case "scan":
-				err = command.ScanCommand(context.Background(), args, in, out)
-			case "sniff":
-				err = command.SniffCommand(context.Background(), args, in, out)
-			case "listen":
-				err = command.ListenCommand(context.Background(), args, in, out)
-			case "help":
-				err = command.HelpCommand(context.Background(), args, in, out)
-			case "exit":
-				fmt.Fprintln(out, "\nExiting the program.")
-				return
-			
-			default:
-				fmt.Fprintln(out, "\nUnknown command\n")
+		case "scan":
+			err = command.ScanCommand(context.Background(), args, in, out)
+		case "sniff":
+			err = command.SniffCommand(context.Background(), args, in, out)
+		case "listen":
+			err = command.ListenCommand(context.Background(), args, in, out)
+		case "help":
+			err = command.HelpCommand(context.Background(), args, in, out)
+		case "exit":
+			fmt.Fprintln(out, "\nExiting the program.")
+			return
+
+		default:
+			fmt.Fprintln(out, "\nUnknown command\n")
 		}
 		if err != nil {
 			fmt.Fprintf(out, "Error executing command: %v\n", err)
 		}
-    }
+	}
 }
