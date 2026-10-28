@@ -18,9 +18,11 @@ go run .
 This starts an interactive shell. Type a command and press Enter:
 
 ```
-Enter a command or type 'exit' to quit:
+> Enter a command or type 'exit' to quit:
 help
 ```
+
+While running any of the commands below, you can use `control + c` to stop the command from running and return to the interface
 
 ## Commands
 
