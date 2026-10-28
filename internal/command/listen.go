@@ -4,10 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"os"
-	"os/signal"
 	"strconv"
-	"syscall"
 
 	"github.com/shabebe11/GoNetSuite/internal/netcat"
 )
@@ -22,10 +19,8 @@ func ListenCommand(ctx context.Context, args []string, in io.Reader, out io.Writ
 	if err != nil || port < 1 || port > 65535 {
 		return fmt.Errorf("> invalid port number: %s", args[0])
 	}
-	workerCtx, workerCancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
-	defer workerCancel()
-
-	go netcat.Listen(workerCtx, port, out)
-	<-workerCtx.Done()
+	if err := netcat.Listen(ctx, port, out); err != nil && ctx.Err() == nil {
+		return fmt.Errorf("error listening on port %d: %w", port, err)
+	}
 	return nil
 }

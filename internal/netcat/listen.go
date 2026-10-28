@@ -5,7 +5,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"log"
 	"net"
 )
 
@@ -15,7 +14,7 @@ import (
 func Listen(ctx context.Context, port int, out io.Writer) error {
 	l, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	// Accept ignores ctx, so closing the listener is what unblocks it.
 	go func() {

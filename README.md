@@ -22,7 +22,7 @@ This starts an interactive shell. Type a command and press Enter:
 help
 ```
 
-While running any of the commands below, you can use `control + c` to stop the command from running and return to the interface
+While a command is running, press Ctrl+C to stop it and return to the prompt. If a command fails (for example, a missing or invalid argument), the error is printed right away and you're back at the prompt.
 
 ## Commands
 

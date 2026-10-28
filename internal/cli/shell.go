@@ -7,7 +7,10 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"os"
+	"os/signal"
 	"strings"
+	"syscall"
 
 	"github.com/shabebe11/GoNetSuite/internal/command"
 )
@@ -33,16 +36,19 @@ func RunShell(in io.Reader, out io.Writer) {
 		inputArgs := strings.Fields(input)
 		name, args := inputArgs[0], inputArgs[1:]
 
+		//background context for the worker goroutine, which will be canceled on SIGINT or SIGTERM (Ctrl+C)
+		workerCtx, workerCancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+
 		var err error
 		switch name {
 		case "scan":
-			err = command.ScanCommand(context.Background(), args, in, out)
+			err = command.ScanCommand(workerCtx, args, in, out)
 		case "sniff":
-			err = command.SniffCommand(context.Background(), args, in, out)
+			err = command.SniffCommand(workerCtx, args, in, out)
 		case "listen":
-			err = command.ListenCommand(context.Background(), args, in, out)
+			err = command.ListenCommand(workerCtx, args, in, out)
 		case "help":
-			err = command.HelpCommand(context.Background(), args, in, out)
+			err = command.HelpCommand(workerCtx, args, in, out)
 		case "exit":
 			fmt.Fprintln(out, "\n> Exiting the program.")
 			return
@@ -50,6 +56,8 @@ func RunShell(in io.Reader, out io.Writer) {
 		default:
 			fmt.Fprintln(out, "\n> Unknown command\n")
 		}
+		defer workerCancel()
+
 		if err != nil {
 			fmt.Fprintf(out, "> Error executing command: %v\n", err)
 		}
