@@ -3,6 +3,7 @@ package scan
 import (
 	"context"
 	"net"
+	"os"
 	"sync"
 	"time"
 
@@ -51,6 +52,27 @@ func Sweep(ctx context.Context, ips []net.IP, timeout time.Duration) (map[string
 		}
 	}()
 
+	for i, ip := range ips {
+		if ctx.Err() != nil {
+			break
+		}
+		msg := icmp.Message{
+			Type: ipv4.ICMPTypeEcho,
+			Body: &icmp.Echo{
+				ID:   os.Getpid() & 0xffff,
+				Seq:  i,
+				Data: []byte("gonetsuite"),
+			},
+		}
+		b, err := msg.Marshal(nil)
+		if err != nil {
+			return nil, err
+		}
+		mu.Lock()
+		sent[ip.String()] = time.Now()
+		mu.Unlock()
+		conn.WriteTo(b, &net.UDPAddr{IP: ip})
+	}
 	<-done
-	return nil, err
+	return results, nil
 }
