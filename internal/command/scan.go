@@ -2,6 +2,7 @@ package command
 
 import (
 	"context"
+	"encoding/binary"
 	"fmt"
 	"io"
 	"net"
@@ -16,8 +17,10 @@ func ScanCommand(ctx context.Context, args []string, in io.Reader, out io.Writer
 		return err
 	}
 
-	mask := localIp.Mask
-	network := localIp.IP.Mask(mask)
+	ips, err := hosts(localIp)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -29,6 +32,9 @@ func localSubnet() (*net.IPNet, error) {
 	}
 
 	for _, iface := range interfaces {
+		if iface.Flags&net.FlagUp == 0 || iface.Flags&net.FlagLoopback != 0 {
+			continue
+		}
 		addrs, err := iface.Addrs()
 		if err != nil {
 			continue
@@ -42,4 +48,26 @@ func localSubnet() (*net.IPNet, error) {
 		}
 	}
 	return nil, fmt.Errorf("no suitable local IP address found")
+}
+
+func hosts(ipNet *net.IPNet) ([]net.IP, error) {
+	ip4 := ipNet.IP.To4()
+	ones, bits := ipNet.Mask.Size()
+	if bits-ones > 10 {
+		return nil, fmt.Errorf("subnet /%d too large to sweep", ones)
+	}
+
+	network := binary.BigEndian.Uint32(ip4.Mask(ipNet.Mask))
+	size := uint32(1) << (bits - ones)
+
+	var ips []net.IP
+	for i := uint32(1); i < size-1; i++ {
+		ip := make(net.IP, 4)
+		binary.BigEndian.PutUint32(ip, network+i)
+		if ip.Equal(ip4) {
+			continue
+		}
+		ips = append(ips, ip)
+	}
+	return ips, nil
 }
