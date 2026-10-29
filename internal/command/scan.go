@@ -2,7 +2,6 @@ package command
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"net"
 )
@@ -16,6 +15,9 @@ func ScanCommand(ctx context.Context, args []string, in io.Reader, out io.Writer
 		return err
 	}
 
+	var localIp *net.IPNet
+
+outer:
 	for _, iface := range interfaces {
 		addrs, err := iface.Addrs()
 		if err != nil {
@@ -33,9 +35,13 @@ func ScanCommand(ctx context.Context, args []string, in io.Reader, out io.Writer
 			if ip4 == nil {
 				continue
 			}
+			localIp = ipNet
+			break outer
 		}
-
 	}
+
+	mask := localIp.Mask
+	network := localIp.IP.Mask(mask)
 
 	return nil
 }
