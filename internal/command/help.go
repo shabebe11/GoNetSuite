@@ -12,7 +12,7 @@ import (
 func HelpCommand(ctx context.Context, args []string, in io.Reader, out io.Writer) error {
 	fmt.Fprintln(out, "-------------------------------------")
 	fmt.Fprintln(out, "Available commands:")
-	fmt.Fprintln(out, "  scan   - Scan ports")
+	fmt.Fprintln(out, "  scan   - Find devices on the local network")
 	fmt.Fprintln(out, "  sniff  - Capture and decode packets")
 	fmt.Fprintln(out, "  listen - Listen for connections")
 	fmt.Fprintln(out, "  help   - Show this help message")
